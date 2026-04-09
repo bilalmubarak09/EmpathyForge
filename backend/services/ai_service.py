@@ -39,7 +39,7 @@ Return ONLY valid JSON array with no additional text or explanation."""
         response = model.generate_content(prompt)
         return _parse_json_response(response.text)
     except Exception as e:
-        raise Exception(f"Failed to identify stakeholders: {str(e)}")
+        raise RuntimeError(f"Failed to identify stakeholders: {str(e)}") from e
 
 
 def generate_empathy_map(project_description: str, stakeholder_name: str, stakeholder_role: str) -> dict:
@@ -54,7 +54,7 @@ Generate a detailed empathy map. Return ONLY valid JSON with keys: think_and_bel
         response = model.generate_content(prompt)
         return _parse_json_response(response.text)
     except Exception as e:
-        raise Exception(f"Failed to generate empathy map for {stakeholder_name}: {str(e)}")
+        raise RuntimeError(f"Failed to generate empathy map for {stakeholder_name}: {str(e)}") from e
 
 
 def generate_critical_analysis(project_description: str, stakeholders_summary: str) -> dict:
@@ -73,7 +73,7 @@ Return ONLY valid JSON object with each role as a key and the response as the va
         response = model.generate_content(prompt)
         return _parse_json_response(response.text)
     except Exception as e:
-        raise Exception(f"Failed to generate critical analysis: {str(e)}")
+        raise RuntimeError(f"Failed to generate critical analysis: {str(e)}") from e
 
 
 def generate_design_report(
@@ -92,4 +92,4 @@ Return ONLY valid JSON with keys: refined_problem_statement (string), design_opp
         response = model.generate_content(prompt)
         return _parse_json_response(response.text)
     except Exception as e:
-        raise Exception(f"Failed to generate design report: {str(e)}")
+        raise RuntimeError(f"Failed to generate design report: {str(e)}") from e

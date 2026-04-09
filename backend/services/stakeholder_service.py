@@ -1,4 +1,3 @@
-import json
 from services.ai_service import (
     identify_stakeholders,
     generate_empathy_map,
@@ -25,8 +24,11 @@ def run_full_analysis(project_description: str, product_category: str, design_st
     stakeholders_summary = ", ".join([f"{s['name']} ({s['role']})" for s in stakeholders])
     critical_analysis = generate_critical_analysis(project_description, stakeholders_summary)
 
-    # Step 4: Generate design report
-    critical_summary = json.dumps(critical_analysis)[:500]
+    # Step 4: Generate design report (build a safe summary instead of truncating serialized JSON)
+    critical_roles = list(critical_analysis.keys())[:4]
+    critical_summary = "; ".join(
+        f"{role}: {str(critical_analysis[role])[:80]}" for role in critical_roles
+    )
     design_report = generate_design_report(project_description, stakeholders_summary, critical_summary)
 
     return {

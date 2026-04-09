@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -8,8 +8,17 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models.models import User
 import os
+import warnings
 
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
+_SECRET_KEY_DEFAULT = "CHANGE-ME-in-production"
+SECRET_KEY = os.getenv("SECRET_KEY", "")
+if not SECRET_KEY:
+    warnings.warn(
+        "SECRET_KEY environment variable is not set. Using an insecure default. "
+        "Set SECRET_KEY in production!",
+        stacklevel=1,
+    )
+    SECRET_KEY = _SECRET_KEY_DEFAULT
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 7
 
@@ -27,7 +36,7 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS))
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
