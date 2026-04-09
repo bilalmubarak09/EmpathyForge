@@ -19,8 +19,11 @@ def _parse_json_response(text: str) -> dict | list:
     return json.loads(text)
 
 
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
+
+
 def _get_model():
-    return genai.GenerativeModel("gemini-1.5-pro")
+    return genai.GenerativeModel(GEMINI_MODEL)
 
 
 def identify_stakeholders(project_description: str, product_category: str, design_stage: str) -> list:

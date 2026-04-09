@@ -16,7 +16,8 @@ export function AuthProvider({ children }) {
         headers: { Authorization: `Bearer ${token}` }
       }).then(res => {
         setUser(res.data)
-      }).catch(() => {
+      }).catch((err) => {
+        console.error('Auth token validation failed:', err)
         setToken(null)
         setUser(null)
         localStorage.removeItem('token')

@@ -1,10 +1,18 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 from models import models
 from routers import auth_router, project, empathy
 
-app = FastAPI(title="EmpathyForge API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    models.Base.metadata.create_all(bind=engine)
+    yield
+
+
+app = FastAPI(title="EmpathyForge API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,11 +25,6 @@ app.add_middleware(
 app.include_router(auth_router.router)
 app.include_router(project.router)
 app.include_router(empathy.router)
-
-
-@app.on_event("startup")
-def startup_event():
-    models.Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
